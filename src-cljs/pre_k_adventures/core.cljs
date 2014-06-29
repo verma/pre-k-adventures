@@ -1,6 +1,7 @@
 (ns pre-k-adventures.core
   (:require [pre-k-adventures.background :refer [background]]
             [pre-k-adventures.props :refer [shrubbery]]
+            [pre-k-adventures.path :refer [path]]
 
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -13,6 +14,7 @@
     (render [this]
       (dom/div nil
                (om/build background {:size-x size-x :size-y size-y})
+               (om/build path {:startx 5 :starty 5 :endx 7 :endy 5})
                (apply dom/div nil
                       (om/build-all shrubbery (for [a (range 1 10)]
                                                 {:type (if (= (mod a 2) 0) :shrub :tree)

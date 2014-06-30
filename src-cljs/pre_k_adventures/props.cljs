@@ -27,12 +27,29 @@
       (.log js/console "shrubbery")
       (dom/div #js {:className "shrub"
                     :style #js {:position "absolute"
-                                :top (* x 64)
-                                :left (* y 64)
+                                :top (* y 64)
+                                :left (* x 64)
                                 :backgroundImage "url(img/tileset.png)"
                                 :backgroundPosition (shrub-offset type color large)
                                 :zIndex "-4000"
                                 :width "64px"
                                 :height (if (= type :tree) "128px" "64px")}}
                " "))))
+
+
+(defn shrub-cluster
+  "Generate a cluster of shrubs so that it looks nice"
+  [{:keys [x y width height]} owner]
+  (reify
+    om/IRender
+    (render [this]
+      (apply dom/div nil
+             (om/build-all shrubbery (for [_x (range 0 width)
+                                           _y (range 0 height)]
+                                       {:x (+ x _x) :y (+ y _y)
+                                        :type :shrub
+                                        :color (rand-nth [:green :dark-green :brown])
+                                        :large (rand-nth [true false])})))
+
+      )))
 

@@ -1,6 +1,6 @@
 (ns pre-k-adventures.core
   (:require [pre-k-adventures.background :refer [background]]
-            [pre-k-adventures.props :refer [shrubbery]]
+            [pre-k-adventures.props :refer [shrubbery shrub-cluster]]
             [pre-k-adventures.path :refer [path]]
 
             [om.core :as om :include-macros true]
@@ -14,14 +14,8 @@
     (render [this]
       (dom/div nil
                (om/build background {:size-x size-x :size-y size-y})
-               (om/build path {:startx 5 :starty 5 :endx 7 :endy 5})
-               (apply dom/div nil
-                      (om/build-all shrubbery (for [a (range 1 10)]
-                                                {:type (if (= (mod a 2) 0) :shrub :tree)
-                                                 :color (if (= (mod a 3) 0) :dark-green :brown)
-                                                 :large true
-                                                 :x (rand-int size-x)
-                                                 :y (rand-int size-y)})))))))
+               (om/build shrub-cluster {:x 5 :y 5 :width 3 :height 1})
+               (om/build shrub-cluster {:x 3 :y 8 :width 3 :height 1})))))
 
 
 (om/root game {:size-x 15 :size-y 15 }

@@ -24,25 +24,33 @@
    (.drawImage ctx img sx sy sw sh dx dy dw dh)))
 
 (def level ["^------$"
+            "< o    >"
             "<      >"
             "<      >"
+            "<  o   >"
             "<      >"
             "<      >"
-            "<      >"
-            "<      >"
-            "<      >"
+            "< o  o >"
             "v++++++%"])
 
 (def symbols
-  { \^ '(0 0 64 64)
-    \- '(64 0 64 64)
-    \+ '(64 128 64 64)
-    \< '(0 64 64 64)
-    \> '(128 64 64 64)
-    \  '(64 64 64 64)
-    \% '(128 128 64 64)
-    \v '(0 128 64 64)
-    \$ '(128 0 64 64) })
+  { \^ #(blit! %1 %2 0 0 64 64 %3 %4)
+    \- #(blit! %1 %2 64 0 64 64 %3 %4)
+    \+ #(blit! %1 %2 64 128 64 64 %3 %4)
+    \< #(blit! %1 %2 0 64 64 64 %3 %4)
+    \> #(blit! %1 %2 128 64 64 64 %3 %4)
+    \  #(blit! %1 %2 64 64 64 64 %3 %4)
+    \% #(blit! %1 %2 128 128 64 64 %3 %4)
+    \v #(blit! %1 %2 0 128 64 64 %3 %4)
+    \$ #(blit! %1 %2 128 0 64 64 %3 %4)
+
+    \o (fn [ctx img x y]
+         (blit! ctx img 64 64 64 64 x y)
+         (blit! ctx img 128 576 64 64 (- x 8) (- y 16))
+         (blit! ctx img 192 576 64 64 (- x 20) (- y 10))
+         (blit! ctx img 0 576 64 64 x y)
+         (blit! ctx img 64 576 64 64 (+ 16 x) y))
+   })
 
 
 
@@ -52,11 +60,19 @@
   (.rect ctx x y w h)
   (.stroke ctx))
 
+(defn clear! [ctx]
+  (let [w 800
+        h 600]
+    (set! (.-strokeColor ctx) "#ffffff")
+    (set! (.-fillStyle ctx) "#ffffff")
+    (.fillRect ctx 0 0 w h)))
+
 (defn game [state ctx]
+  (clear! ctx)
   (doseq [[line row] (map list level (range))
           [c i] (map list line (range))]
-      (let [[sx sy sw sh] (symbols c)]
-        (blit! ctx image sx sy sw sh (* 64 i) (* 64 row)))))
+      (let [f (symbols c)]
+        (f ctx image (* 64 i) (* 64 row)))))
 
 (defn get-context [el]
   (.getContext el "2d"))

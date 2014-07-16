@@ -1,6 +1,8 @@
 (ns pre-k-adventures.core
-  (:require [cljs.core.match])
-  (:require-macros [cljs.core.match.macros :refer [match]]))
+  (:require [pre-k-adventures.util :as util]
+            [cljs.core.match])
+  (:require-macros [cljs.core.match.macros :refer [match]]
+                   [pre-k-adventures.macros :refer [offset-rand]]))
 
 (def image 
   (let [img (js/Image.)]
@@ -29,18 +31,18 @@
   ([ctx img sx sy sw sh dx dy]
    (blit! ctx img (* sx 64) (* sy 64) (* sw 64) (* sh 64) (* dx 64) (* dy 64))))
 
-(def level ["^---------$"
-            "< o       >"
-            "<         >"
-            "<         >"
-            "<  o  l   >"
-            "<         >"
-            "<         >"
-            "< o  O    >"
-            "v+++++++++%"])
+(def level ["^----------$"
+            "< o        >"
+            "<         l>"
+            "<          >"
+            "<  o  l    >"
+            "<          >"
+            "<          >"
+            "< o  O     >"
+            "v++++++++++%"])
 
-(defn offset-by [e by]
-  (+ e (/ by 64)))
+(defn offset-rand [e by]
+  (util/offset-by e (- by (rand-int (* 2 by)))))
 
 (def symbols
   { \^ #(blit-cell! %1 %2 0 0 %3 %4)
@@ -54,21 +56,19 @@
     \$ #(blit-cell! %1 %2 2 0 %3 %4)
 
     \o (fn [ctx img x y]
-         (blit-cell! ctx img 2 9 (offset-by x 8) (offset-by y -16))
-         (blit-cell! ctx img 3 9 (offset-by x -20) (offset-by y -10))
+         (blit-cell! ctx img 2 9 (util/offset-by x 8) (util/offset-by y -16))
+         (blit-cell! ctx img 3 9 (util/offset-by x -20) (util/offset-by y -10))
          (blit-cell! ctx img 0 9 x y)
-         (blit-cell! ctx img 1 9 (offset-by x 16) y))
+         (blit-cell! ctx img 1 9 (util/offset-by x 16) y))
 
    \O (fn [ctx img x y]
-         (blit-cell! ctx img 3 9 (offset-by x 20) (offset-by y -40))
-         (blit-cell! ctx img 0 9 x (offset-by y -16))
-         (blit-cell! ctx img 2 9 (offset-by x 8) (offset-by y -8)))
+         (blit-cell! ctx img 3 9 (util/offset-by x 20) (util/offset-by y -40))
+         (blit-cell! ctx img 0 9 x (util/offset-by y -16))
+         (blit-cell! ctx img 2 9 (util/offset-by x 8) (util/offset-by y -8)))
 
    ;; for multi-tile tiles always draw up, drawing down will be overritten by the next line
    \l (fn [ctx img x y]
-        (blit-cell! ctx img 3 10 1 2 (offset-by x -20) (offset-by (- y 1) -4))
-        (blit-cell! ctx img 0 10 1 2 x (- y 1))
-        (blit-cell! ctx img 1 10 1 2 (offset-by x 16) (offset-by (- y 1) 10)))
+        (blit-cell! ctx img 0 10 1 2 x (- y 1)))
    })
 
 
